@@ -4,7 +4,8 @@ ARG UBUNTU_VERSION=16.04
 
 ARG ARCH=
 ARG CUDA=10.1
-FROM nvidia/cuda${ARCH:+-$ARCH}:${CUDA}-base-ubuntu${UBUNTU_VERSION} as base
+# FROM nvidia/cuda${ARCH:+-$ARCH}:${CUDA}-base-ubuntu${UBUNTU_VERSION} as base
+FROM gpuci/build-rapidsai:0.15-cuda10.1-base-ubuntu16.04-py3.7 as base
 # ARCH and CUDA are specified again because the FROM directive resets ARGs
 # (but their default value is retained if set previously)
 ARG ARCH
@@ -18,7 +19,7 @@ ARG LIBNVINFER_MAJOR_VERSION=6
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
 # Pick up some TF dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --allow-unauthenticated --no-install-recommends \
         build-essential \
         cuda-command-line-tools-${CUDA/./-} \
         # There appears to be a regression in libcublas10=10.2.2.89-1 which
@@ -90,26 +91,26 @@ WORKDIR /home/ubuntu/WM
 COPY . .
 
 # install packages
-RUN apt -y update
-RUN apt install -y python3-dev
-RUN apt install -y git
-RUN apt install -y wget
+RUN apt -y update --allow-insecure-repositories
+RUN apt install -y --allow-unauthenticated python3-dev
+RUN apt install -y --allow-unauthenticated git
+RUN apt install -y --allow-unauthenticated wget
 
 # CarRacing
-RUN apt install -y libopenmpi-dev
-RUN apt install -y xvfb
-RUN apt install -y python-opengl
-RUN apt install -y fontconfig
+RUN apt install -y --allow-unauthenticated libopenmpi-dev
+RUN apt install -y --allow-unauthenticated xvfb
+RUN apt install -y --allow-unauthenticated python-opengl
+RUN apt install -y --allow-unauthenticated fontconfig
 
 # Doom
-RUN apt install -y cmake
-RUN apt install -y gcc
-RUN apt install -y unzip
-RUN apt install -y zlib1g-dev
-RUN apt install -y libjpeg-dev
-RUN apt install -y libsdl2-dev
-RUN apt install -y libboost-all-dev
-RUN apt install -y gdb
+RUN apt install -y --allow-unauthenticated cmake
+RUN apt install -y --allow-unauthenticated gcc
+RUN apt install -y --allow-unauthenticated unzip
+RUN apt install -y --allow-unauthenticated zlib1g-dev
+RUN apt install -y --allow-unauthenticated libjpeg-dev
+RUN apt install -y --allow-unauthenticated libsdl2-dev
+RUN apt install -y --allow-unauthenticated libboost-all-dev
+RUN apt install -y --allow-unauthenticated gdb
 
 # install pip packages
 RUN pip3 install --upgrade pip
